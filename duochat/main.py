@@ -9,6 +9,50 @@ ROOT_BOX_STYLE = me.Style(
 )
 
 
+@me.stateclass
+class State:
+    input: str = ""
+
+
+def on_blur(e: me.InputBlurEvent):
+    state = me.state(State)
+    state.input = e.value
+
+
+def send_prompt(e: me.ClickEvent):
+    state = me.state(State)
+    print(f"Sending prompt: {state.input}")
+    state.input = ""
+
+
+def chat_input():
+    state = me.state(State)
+
+    with me.box(
+        style=me.Style(
+            border_radius=16,
+            padding=me.Padding.all(8),
+            background="white",
+            display="flex",
+            width="100%",
+        )
+    ):
+        with me.box(style=me.Style(flex_grow=1)):
+            me.native_textarea(
+                value=state.input,
+                on_blur=on_blur,
+                placeholder="Enter a prompt",
+                style=me.Style(
+                    padding=me.Padding(top=16, left=16),
+                    outline="none",
+                    width="100%",
+                    border=me.Border.all(me.BorderSide(style="none")),
+                ),
+            )
+        with me.content_button(type="icon", on_click=send_prompt):
+            me.icon("send")
+
+
 @me.page(
     path="/",
     stylesheets=[
@@ -52,27 +96,3 @@ def header():
                 letter_spacing="0.3px",
             ),
         )
-
-
-def chat_input():
-    with me.box(
-        style=me.Style(
-            border_radius=16,
-            padding=me.Padding.all(8),
-            background="white",
-            display="flex",
-            width="100%",
-        )
-    ):
-        with me.box(style=me.Style(flex_grow=1)):
-            me.native_textarea(
-                placeholder="Enter a prompt",
-                style=me.Style(
-                    padding=me.Padding(top=16, left=16),
-                    outline="none",
-                    width="100%",
-                    border=me.Border.all(me.BorderSide(style="none")),
-                ),
-            )
-        with me.content_button(type="icon"):
-            me.icon("send")
